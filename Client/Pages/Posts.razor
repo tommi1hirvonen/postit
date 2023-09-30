@@ -73,6 +73,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        user = await Http.GetFromJsonAsync<User>($"api/Users/{UserId}");
         posts = await Http.GetFromJsonAsync<Post[]>($"api/Posts/{UserId}");
     }
 
