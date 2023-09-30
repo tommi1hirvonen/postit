@@ -11,7 +11,7 @@
 }
 else
 {
-    <table class="table">
+    <table class="table mt-3">
         <thead>
             <tr>
                 <th>Username</th>
@@ -24,7 +24,9 @@ else
             {
                 <tr>
                     <td>
-                        @user.Username
+                        <a href="posts/@user.Id">
+                            @user.Username
+                        </a>
                     </td>
                     <td>@user.Name</td>
                     <td>@user.Email</td>
