@@ -27,7 +27,7 @@ public class WeatherForecast
 
         var query = container.GetItemLinqQueryable<Forecast>();
         var iterator = query.ToFeedIterator();
-        var forecasts = await iterator.ReadNextAsync();
+        var forecasts = await iterator.ReadNextAsync(req.FunctionContext.CancellationToken);
         var response = req.CreateResponse(HttpStatusCode.OK);
         await response.WriteAsJsonAsync(forecasts);
         return response;
