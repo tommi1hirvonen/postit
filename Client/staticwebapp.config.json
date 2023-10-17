@@ -4,8 +4,12 @@
   },
   "routes": [
     {
-      "route": "/login",
+      "route": "/login/aad",
       "rewrite": "/.auth/login/aad"
+    },
+    {
+      "route": "/login/google",
+      "rewrite": "/.auth/login/google"
     },
     {
       "route": "/logout",
@@ -14,6 +18,18 @@
     {
       "route": "/api/*",
       "allowedRoles": ["datareader"]
+    },
+    {
+      "route": "/.auth/login/twitter",
+      "statusCode": 404
+    },
+    {
+      "route": "/.auth/login/facebook",
+      "statusCode": 404
+    },
+    {
+      "route": "/.auth/login/github",
+      "statusCode": 404
     }
   ],
   "responseOverrides": {
