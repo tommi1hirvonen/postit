@@ -1,10 +1,16 @@
 ﻿<CascadingAuthenticationState>
     <Router AppAssembly="@typeof(App).Assembly">
         <Found Context="routeData">
-            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" Context="user">
                 <NotAuthorized>
-                    <p>Unauthorized</p>
-                    <a href="/login">Log in</a>
+                    @if (user.User.Identity?.IsAuthenticated ?? false)
+                    {
+                        <p>Unauthorized - user @user.User.Identity?.Name does not have sufficient privileges</p>
+                    }
+                    else
+                    {
+                        <p>Unauthorized - <a href="/login">log in</a> to view data</p>
+                    }
                 </NotAuthorized>
             </AuthorizeRouteView>
             <FocusOnNavigate RouteData="@routeData" Selector="h1" />

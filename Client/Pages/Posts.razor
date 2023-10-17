@@ -1,6 +1,6 @@
 @page "/posts/{UserId}"
 
-@attribute [Authorize]
+@attribute [Authorize(Roles = "datareader")]
 
 @inject HttpClient Http
 

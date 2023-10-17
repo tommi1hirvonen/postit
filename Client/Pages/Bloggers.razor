@@ -1,6 +1,6 @@
 @page "/bloggers"
 
-@attribute [Authorize]
+@attribute [Authorize(Roles = "datareader")]
 
 @inject HttpClient Http
 

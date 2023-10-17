@@ -13,7 +13,7 @@
     },
     {
       "route": "/api/*",
-      "allowedRoles": ["authenticated"]
+      "allowedRoles": ["datareader"]
     }
   ],
   "responseOverrides": {
