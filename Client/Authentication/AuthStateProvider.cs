@@ -7,18 +7,18 @@ namespace Postit.Authentication;
 
 public class AuthStateProvider : AuthenticationStateProvider
 {
-    private readonly HttpClient _http;
+    private readonly HttpClient _httpClient;
 
-    public AuthStateProvider(IWebAssemblyHostEnvironment environment)
+    public AuthStateProvider(IHttpClientFactory httpClientFactory)
     {
-        _http = new HttpClient { BaseAddress = new Uri(environment.BaseAddress) };
+        _httpClient = httpClientFactory.CreateClient("host");
     }
 
     public async override Task<AuthenticationState> GetAuthenticationStateAsync()
     {
         try
         {
-            var data = await _http.GetFromJsonAsync<AuthData>("/.auth/me");
+            var data = await _httpClient.GetFromJsonAsync<AuthData>("/.auth/me");
             ArgumentNullException.ThrowIfNull(data);
             var principal = data.ClientPrincipal;
             principal.UserRoles = principal.UserRoles.Except(new string[] { "anonymous" }, StringComparer.CurrentCultureIgnoreCase);

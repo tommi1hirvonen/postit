@@ -2,7 +2,7 @@
 
 @attribute [Authorize(Roles = "datareader")]
 
-@inject HttpClient Http
+@inject IHttpClientFactory HttpClientFactory
 
 <PageTitle>Bloggers</PageTitle>
 
@@ -76,14 +76,16 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        user = await Http.GetFromJsonAsync<User>($"api/Users/{UserId}");
-        posts = await Http.GetFromJsonAsync<Post[]>($"api/Posts/{UserId}");
+        var client = HttpClientFactory.CreateClient("host");
+        user = await client.GetFromJsonAsync<User>($"api/Users/{UserId}");
+        posts = await client.GetFromJsonAsync<Post[]>($"api/Posts/{UserId}");
     }
 
     private async Task ShowCommentsAsync(string postId)
     {
         this.postId = postId;
-        comments = await Http.GetFromJsonAsync<Comment[]>($"api/Comments/{postId}");
+        var client = HttpClientFactory.CreateClient("host");
+        comments = await client.GetFromJsonAsync<Comment[]>($"api/Comments/{postId}");
     }
 
     private void HideComments() => (postId, comments) = (null, null);
