@@ -12,6 +12,10 @@
 {
     <p><em>Loading...</em></p>
 }
+else if (posts.Length == 0)
+{
+    <p>No posts</p>
+}
 else
 {
     <div class="row mt-3">
@@ -32,7 +36,7 @@ else
             }
         </div>
     
-        @if (comments is not null)
+        @if (postId is not null)
         {
             <div class="col border-start">
                 <div class="row mb-4">
@@ -43,20 +47,30 @@ else
                         <button type="button" class="btn-close" aria-label="Close" @onclick="HideComments"></button>
                     </div>
                 </div>
-                
-                @foreach (var comment in comments)
+                @if (comments is null)
                 {
-                    <div class="row mb-4">
-                    <div class="col">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">@comment.Name</h5>
-                                <h6 class="card-subtitle mb-2 text-body-secondary">@comment.Email</h6>
-                                <p>@comment.Body</p>
+                    <p><em>Loading...</em></p>
+                }
+                else if (comments.Length == 0)
+                {
+                    <p>No comments</p>
+                }
+                else
+                {
+                    @foreach (var comment in comments)
+                    {
+                        <div class="row mb-4">
+                        <div class="col">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">@comment.Name</h5>
+                                    <h6 class="card-subtitle mb-2 text-body-secondary">@comment.Email</h6>
+                                    <p>@comment.Body</p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                    }
                 }
             </div>
         }
@@ -83,7 +97,7 @@ else
 
     private async Task ShowCommentsAsync(string postId)
     {
-        this.postId = postId;
+        (this.postId, comments) = (postId, null);
         var client = HttpClientFactory.CreateClient("host");
         comments = await client.GetFromJsonAsync<Comment[]>($"api/Comments/{postId}");
     }

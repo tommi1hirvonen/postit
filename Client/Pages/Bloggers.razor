@@ -8,22 +8,34 @@
 
 <h1>Bloggers</h1>
 
-@if (users == null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-    <table class="table mt-3">
-        <thead>
+<table class="table mt-3">
+    <thead>
+        <tr>
+            <th>Username</th>
+            <th>Name</th>
+            <th>Email</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (users is null)
+        {
             <tr>
-                <th>Username</th>
-                <th>Name</th>
-                <th>Email</th>
+                <td colspan="3">
+                    <em>Loading...</em>
+                </td>
             </tr>
-        </thead>
-        <tbody>
-            @foreach (var user in users)
+        }
+        else if (users.Length == 0)
+        {
+            <tr>
+                <td colspan="3">
+                    No users
+                </td>
+            </tr>
+        }
+        else
+        {
+            foreach (var user in users)
             {
                 <tr>
                     <td>
@@ -35,9 +47,9 @@ else
                     <td>@user.Email</td>
                 </tr>
             }
-        </tbody>
-    </table>
-}
+        }
+    </tbody>
+</table>
 
 @code {
     private User[]? users;
