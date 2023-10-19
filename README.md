@@ -17,3 +17,12 @@ Azure Static Web Apps automatically integrates with **Azure Functions** as an AP
 ### Authentication & authorization
 
 Several authentication providers are pre-configured and supported with Azure Static Web Apps. This project utilizes Microsoft Entra ID and Google (preview). Any user can log in and authenticate, but additional custom user roles are assigned to invited users only. These custom roles are then used to authorize specific API endpoints and client pages. This way some features can be restricted to a list of predefined users.
+
+### Datasets
+
+The project uses three sample JSON datasets from <a href="https://jsonplaceholder.typicode.com/">JSONPlaceholder</a>:
+- <a href="https://jsonplaceholder.typicode.com/users">Users</a>
+- <a href="https://jsonplaceholder.typicode.com/posts">Posts</a>
+- <a href="https://jsonplaceholder.typicode.com/comments">Comments</a>
+
+Users write posts, which in turn have comments. These datasets are stored in a Cosmos database called `Postit` in containers named `Users`, `Posts` and `Comments` respectively. Data is fetched from Cosmos using the Functions API and displayed in the client Blazor WebAssembly app.
