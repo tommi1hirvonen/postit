@@ -1,0 +1,76 @@
+@page "/search"
+
+@attribute [Authorize(Roles = "datareader")]
+
+@inject IHttpClientFactory HttpClientFactory
+
+<PageTitle>Search</PageTitle>
+
+<h1>Search posts</h1>
+
+<div class="row">
+    <div class="col">
+        <input class="form-control" type="text" placeholder="Username" @bind-value="usernameSearchTerm" style="max-width: 30rem;" />
+    </div>
+</div>
+<div class="row mt-3">
+    <div class="col">
+        <input class="form-control" type="text" placeholder="Post body" @bind-value="postSearchTerm" style="max-width: 30rem;" />        
+    </div>
+</div>
+
+<button class="btn btn-primary mt-3 @(loading ? "disabled" : null)" @onclick="QueryPostsAsync">
+    Search
+</button>
+
+@if (loading)
+{
+    <p class="mt-3"><em>Loading...</em></p>
+}
+else if (posts is null)
+{
+    <p class="mt-3">Run query to view matching posts</p>
+}
+else if (posts.Length == 0)
+{
+    <p class="mt-3">No posts</p>
+}
+else
+{
+    <div class="row mt-3">
+        <div class="col">
+            @foreach (var post in posts)
+            {
+                <div class="row mb-4">
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title mb-3">@post.Title</h5>
+                                <p>@post.Body</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    private string usernameSearchTerm = "";
+    private string postSearchTerm = "";
+    private Post[]? posts = null;
+    private bool loading = false;
+
+    private async Task QueryPostsAsync()
+    {
+        loading = true;
+        StateHasChanged();
+        var query = new PostsQuery(usernameSearchTerm, postSearchTerm);
+        var client = HttpClientFactory.CreateClient("host");
+        var requestContent = new StringContent(JsonSerializer.Serialize(query));
+        var response = await client.PostAsync("api/Search", requestContent);
+        posts = (await response.Content.ReadFromJsonAsync<Post[]>()) ?? Array.Empty<Post>();
+        loading = false;
+    }
+}
