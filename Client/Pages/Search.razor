@@ -8,20 +8,22 @@
 
 <h1>Search posts</h1>
 
-<div class="row">
-    <div class="col">
-        <input class="form-control" type="text" placeholder="Username" @bind-value="usernameSearchTerm" style="max-width: 30rem;" />
+<EditForm Model="model" OnValidSubmit="QueryPostsAsync">
+    <div class="row">
+        <div class="col">
+            <input class="form-control" type="text" placeholder="Username" @bind-value="model.UsernameSearchTerm" style="max-width: 30rem;" />
+        </div>
     </div>
-</div>
-<div class="row mt-3">
-    <div class="col">
-        <input class="form-control" type="text" placeholder="Post body" @bind-value="postSearchTerm" style="max-width: 30rem;" />        
+    <div class="row mt-3">
+        <div class="col">
+            <input class="form-control" type="text" placeholder="Post body" @bind-value="model.PostSearchTerm" style="max-width: 30rem;" />        
+        </div>
     </div>
-</div>
 
-<button class="btn btn-primary mt-3 @(loading ? "disabled" : null)" @onclick="QueryPostsAsync">
-    Search
-</button>
+    <button type="submit" class="btn btn-primary mt-3 @(loading ? "disabled" : null)">
+        Search
+    </button>
+</EditForm>
 
 @if (loading)
 {
@@ -57,8 +59,7 @@ else
 }
 
 @code {
-    private string usernameSearchTerm = "";
-    private string postSearchTerm = "";
+    private Model model = new();
     private Post[]? posts = null;
     private bool loading = false;
 
@@ -66,11 +67,18 @@ else
     {
         loading = true;
         StateHasChanged();
-        var query = new PostsQuery(usernameSearchTerm, postSearchTerm);
+        var query = new PostsQuery(model.UsernameSearchTerm, model.PostSearchTerm);
         var client = HttpClientFactory.CreateClient("host");
         var requestContent = new StringContent(JsonSerializer.Serialize(query));
         var response = await client.PostAsync("api/Search", requestContent);
         posts = (await response.Content.ReadFromJsonAsync<Post[]>()) ?? Array.Empty<Post>();
         loading = false;
+    }
+
+    private class Model
+    {
+        public string UsernameSearchTerm { get; set; } = "";
+
+        public string PostSearchTerm { get; set; } = "";
     }
 }
