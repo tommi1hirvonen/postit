@@ -49,7 +49,7 @@ public class Search
         
         var posts = new List<Post>();
 
-        // Users is not empty and no results were found
+        // Users is not null but no results were found => don't bother searching for posts.
         if (users?.Count == 0)
         {
             var emptyResponse = req.CreateResponse(HttpStatusCode.OK);
@@ -57,28 +57,16 @@ public class Search
             return emptyResponse;
         }
 
+        // Map ids to their index.
         var userIds = users?.Select((u, i) => (u.Id, Index: i)).ToArray();
 
         var postsContainer = client.GetContainer("Postit", "Posts");
-        var postsQueryDef = (postSearchTerm, userIds) switch
+        var postsQueryDef = (postSearchTerm.Length, userIds) switch
         {
-            ({ Length: 0 }, null) =>
-                new QueryDefinition("SELECT * FROM posts p"),
-
-            ({ Length: 0 }, not null) =>
-                userIds.Aggregate(
-                    new QueryDefinition($"SELECT * FROM posts p WHERE p.userId IN ({string.Join(',', userIds.Select(i => $"@p{i.Index}"))})"),
-                    (q, id) => q.WithParameter($"@p{id.Index}", id.Id)),
-
-            ({ Length: >0 }, null) =>
-                new QueryDefinition("SELECT * FROM posts p WHERE LOWER(p.body) LIKE @term")
-                    .WithParameter("@term", $"%{EncodeForLike(postSearchTerm.ToLower())}%"),
-
-            ({ Length: >0 }, not null) =>
-                userIds.Aggregate(
-                    new QueryDefinition($"SELECT * FROM posts p WHERE LOWER(p.body) LIKE @term AND p.userId IN ({string.Join(',', userIds.Select(i => $"@p{i.Index}"))})")
-                        .WithParameter("@term", $"%{EncodeForLike(postSearchTerm.ToLower())}%"),
-                        (q, id) => q.WithParameter($"@p{id.Index}", id.Id))   
+            (0, null) => new QueryDefinition("SELECT * FROM posts p"),
+            (0, not null) => BuildQueryWithUserFilter(userIds),
+            (_, null) => BuildQueryWithPostFilter(postSearchTerm),
+            (_, not null) => BuildQueryWithUserAndPostFilter(userIds, postSearchTerm)  
         };
         using var postsFeed = postsContainer.GetItemQueryIterator<Post>(postsQueryDef);
         while (postsFeed.HasMoreResults)
@@ -90,6 +78,34 @@ public class Search
         var response = req.CreateResponse(HttpStatusCode.OK);
         await response.WriteAsJsonAsync(posts);
         return response;
+    }
+
+    private static QueryDefinition BuildQueryWithUserFilter((string Id, int Index)[] userIds)
+    {
+        var idParams = string.Join(',', userIds.Select(i => $"@p{i.Index}"));
+        var baseQuery = new QueryDefinition($"SELECT * FROM posts p WHERE p.userId IN ({idParams})");
+        // Add parameters for user ids.
+        var query = userIds.Aggregate(baseQuery, (q, id) => q.WithParameter($"@p{id.Index}", id.Id));
+        return query;
+    }
+
+    private static QueryDefinition BuildQueryWithPostFilter(string postSearchTerm)
+    {
+        var searchTerm = $"%{EncodeForLike(postSearchTerm.ToLower())}%";
+        var query = new QueryDefinition("SELECT * FROM posts p WHERE LOWER(p.body) LIKE @term")
+            .WithParameter("@term", searchTerm);
+        return query;
+    }
+
+    private static QueryDefinition BuildQueryWithUserAndPostFilter((string Id, int Index)[] userIds, string postSearchTerm)
+    {
+        var idParams = string.Join(',', userIds.Select(i => $"@p{i.Index}"));
+        var searchTerm = $"%{EncodeForLike(postSearchTerm.ToLower())}%";
+        var baseQuery = new QueryDefinition($"SELECT * FROM posts p WHERE LOWER(p.body) LIKE @term AND p.userId IN ({idParams})")
+            .WithParameter("@term", searchTerm);
+        // Add parameters for user ids.
+        var query = userIds.Aggregate(baseQuery, (q, id) => q.WithParameter($"@p{id.Index}", id.Id));
+        return query;
     }
 
     private static string EncodeForLike(string term) => term.Replace("[", "[[]").Replace("%", "[%]");
