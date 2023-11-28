@@ -13,5 +13,15 @@
             "request": "launch",
             "cwd": "${workspaceFolder}/Client"
         }
-    ]
+    ],
+    "compounds": [
+        {
+          "name": "Client and Server",
+          "configurations": [
+            "Attach to .NET Functions",
+            "Launch and Debug Standalone Blazor WebAssembly App"
+          ],
+          "preLaunchTask": "swa start"
+        }
+      ]
 }

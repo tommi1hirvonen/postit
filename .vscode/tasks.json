@@ -112,6 +112,17 @@
                 "${workspaceFolder}/Client/PostitApp.csproj"
             ],
             "problemMatcher": "$msCompile"
+        },
+		{
+            "type": "shell",
+            "label": "swa start",
+            "command": "swa start http://localhost:5025 --api-location http://localhost:7071",
+            "isBackground": true,
+            "problemMatcher": [],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "dependsOn": []
         }
 	]
 }
