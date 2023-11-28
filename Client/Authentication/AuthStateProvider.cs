@@ -1,9 +1,7 @@
 using System.Net.Http.Json;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-
-namespace Postit.Authentication;
+namespace Postit.Client.Authentication;
 
 public class AuthStateProvider : AuthenticationStateProvider
 {

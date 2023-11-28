@@ -1,3 +1,4 @@
+global using Postit.Models;
 using Microsoft.Extensions.Hosting;
 
 var host = new HostBuilder()

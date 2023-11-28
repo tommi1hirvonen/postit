@@ -4,9 +4,8 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Postit;
 
-namespace Api;
+namespace Postit.Api;
 
 public class Search
 {
@@ -31,14 +30,14 @@ public class Search
         ArgumentNullException.ThrowIfNull(connectionString);
         using var client = new CosmosClient(connectionString);
         
-        List<Postit.User>? users = null;
+        List<Models.User>? users = null;
         if (usernameSearchTerm.Length > 0)
         {
             usernameSearchTerm = $"%{EncodeForLike(usernameSearchTerm.ToLower())}%";
             var usersQueryDef = new QueryDefinition("SELECT * FROM users u WHERE LOWER(u.username) LIKE @term")
                 .WithParameter("@term", usernameSearchTerm);
             var usersContainer = client.GetContainer("Postit", "Users");
-            using var usersFeed = usersContainer.GetItemQueryIterator<Postit.User>(usersQueryDef);
+            using var usersFeed = usersContainer.GetItemQueryIterator<Models.User>(usersQueryDef);
             users = new();
             while (usersFeed.HasMoreResults)
             {

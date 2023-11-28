@@ -1,4 +1,4 @@
-namespace Postit.Authentication;
+namespace Postit.Client.Authentication;
 
 public record ClientPrincipal(string IdentityProvider, string UserId, string UserDetails)
 {

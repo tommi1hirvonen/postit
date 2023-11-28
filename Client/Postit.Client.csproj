@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Shared\Postit.csproj" />
+    <ProjectReference Include="..\Shared\Postit.Shared.csproj" />
   </ItemGroup>
 
 </Project>
