@@ -1,0 +1,4 @@
+Client/wwwroot/lib/** linguist-vendored
+Client/wwwroot/css/bootstrap-icons/** linguist-vendored
+Client/wwwroot/css/bootstrap.custom.css linguist-generated
+Client/wwwroot/css/bootstrap.custom.map linguist-generated
