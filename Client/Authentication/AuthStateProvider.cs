@@ -3,14 +3,10 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Components.Authorization;
 namespace Postit.Client.Authentication;
 
-public class AuthStateProvider : AuthenticationStateProvider
+public class AuthStateProvider(IHttpClientFactory httpClientFactory) : AuthenticationStateProvider
 {
-    private readonly HttpClient _httpClient;
-
-    public AuthStateProvider(IHttpClientFactory httpClientFactory)
-    {
-        _httpClient = httpClientFactory.CreateClient("host");
-    }
+    private readonly HttpClient _httpClient = httpClientFactory.CreateClient("host");
+    private static readonly IEnumerable<string> Anonymous = ["anonymous"];
 
     public async override Task<AuthenticationState> GetAuthenticationStateAsync()
     {
@@ -19,7 +15,7 @@ public class AuthStateProvider : AuthenticationStateProvider
             var data = await _httpClient.GetFromJsonAsync<AuthData>("/.auth/me");
             ArgumentNullException.ThrowIfNull(data);
             var principal = data.ClientPrincipal;
-            principal.UserRoles = principal.UserRoles.Except(new string[] { "anonymous" }, StringComparer.CurrentCultureIgnoreCase);
+            principal.UserRoles = principal.UserRoles.Except(Anonymous, StringComparer.CurrentCultureIgnoreCase);
 
             if (!principal.UserRoles.Any())
             {

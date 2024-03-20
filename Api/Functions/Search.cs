@@ -7,16 +7,10 @@ using Microsoft.Extensions.Logging;
 
 namespace Postit.Api;
 
-public class Search
+public class Search(ILoggerFactory loggerFactory, IConfiguration configuration)
 {
-    private readonly ILogger _logger;
-    private readonly IConfiguration _configuration;
-
-    public Search(ILoggerFactory loggerFactory, IConfiguration configuration)
-    {
-        _logger = loggerFactory.CreateLogger<Search>();
-        _configuration = configuration;
-    }
+    private readonly ILogger _logger = loggerFactory.CreateLogger<Search>();
+    private readonly IConfiguration _configuration = configuration;
 
     [Function("Search")]
     public async Task<HttpResponseData> Run(
@@ -38,7 +32,7 @@ public class Search
                 .WithParameter("@term", usernameSearchTerm);
             var usersContainer = client.GetContainer("Postit", "Users");
             using var usersFeed = usersContainer.GetItemQueryIterator<Models.User>(usersQueryDef);
-            users = new();
+            users = [];
             while (usersFeed.HasMoreResults)
             {
                 var feedResponse = await usersFeed.ReadNextAsync();

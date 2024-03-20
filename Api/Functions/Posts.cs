@@ -5,14 +5,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Postit.Api;
 
-public class Posts
+public class Posts(ILoggerFactory loggerFactory)
 {
-    private readonly ILogger _logger;
-
-    public Posts(ILoggerFactory loggerFactory)
-    {
-        _logger = loggerFactory.CreateLogger<Posts>();
-    }
+    private readonly ILogger _logger = loggerFactory.CreateLogger<Posts>();
 
     [Function("Posts")]
     public async Task<HttpResponseData> Run(

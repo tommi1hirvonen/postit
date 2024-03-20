@@ -5,14 +5,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Postit.Api;
 
-public class Comments
+public class Comments(ILoggerFactory loggerFactory)
 {
-    private readonly ILogger _logger;
-
-    public Comments(ILoggerFactory loggerFactory)
-    {
-        _logger = loggerFactory.CreateLogger<Comments>();
-    }
+    private readonly ILogger _logger = loggerFactory.CreateLogger<Comments>();
 
     [Function("Comments")]
     public async Task<HttpResponseData> Run(
